@@ -1,3 +1,16 @@
+export const colorearagente = ({agente_p,tablero}) =>{
+    let ax = agente_p.x
+    let ay = agente_p.y
+    
+    //obtenemos la casilla donde está posicionado el ajente
+    const elementsCoord = tablero.findIndex(element => element.x === ax && element.y === ay)
+    //creamos copia del tablero
+    let ajuste = [...tablero]
+    //actualizamos tablero con valor visitado true a la casilla donde se encontró el agente
+    ajuste[elementsCoord] = {...ajuste[elementsCoord], isAgente: true} 
+    return(ajuste)
+}
+
 export const colorearcamino = ({agente_p,tablero}) =>{
     let ax = agente_p.x
     let ay = agente_p.y
@@ -7,7 +20,8 @@ export const colorearcamino = ({agente_p,tablero}) =>{
     //creamos copia del tablero
     let ajuste = [...tablero]
     //actualizamos tablero con valor visitado true a la casilla donde se encontró el agente
-    ajuste[elementsCoord] = {...ajuste[elementsCoord], visitado: true} 
+    ajuste[elementsCoord] = {...ajuste[elementsCoord], visitado: true, isAgente: false} 
+    console.log(ajuste);
     return(ajuste)
 }
 
@@ -57,7 +71,7 @@ export const crearentorno = () =>{
     for(let i=19;i>=0;i--){
         id=id-20;
         for(let j=0;j<20;j++){
-            arr.push({'id':id,'x':j,'y':i,'obs':false,'meta':false,'visitado':false});
+            arr.push({'id':id,'x':j,'y':i,'obs':false,'meta':false,'visitado':false,'isAgente': false});
             id++;
         }
         id=id-20;            

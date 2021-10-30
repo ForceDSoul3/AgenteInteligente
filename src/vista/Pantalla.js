@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
-import Agente from './Agente'
+// import Agente from './Agente'
 import Casillas from './Casillas'
 import Sensores from './Sensores'
 import { evaluarS1, evaluarS2, evaluarS3,evaluarS4,evaluarS5,evaluarS6,evaluarS7,evaluarS8} from '../logica/exploracion'
-import { colorearcamino, colorearmeta, colorearobstaculo, crearentorno, crearmuros } from '../logica/calculosentorno'
+import { colorearagente, colorearcamino, colorearmeta, colorearobstaculo, crearentorno, crearmuros } from '../logica/calculosentorno'
 
 
 export default class Pantalla extends Component{
@@ -36,13 +36,21 @@ export default class Pantalla extends Component{
         this.irameta = this.irameta.bind(this)
         this.sleep = this.sleep.bind(this)
         this.pasos = this.pasos.bind(this)
-
+        this.paintAgente = this.paintAgente.bind(this)
 
         this.explorarentorno = this.explorarentorno.bind(this)
 
     }
 
-
+    async paintAgente(){
+        console.log('Pintando agente');
+        const {agente_p,tablero} = this.state
+        const ajuste = colorearagente({agente_p,tablero})
+        this.setState({tablero: ajuste})
+        console.log(ajuste);
+        console.log(this.state.tablero);
+        console.log('Agente pintado');
+    }
     
     async irameta(){
         const {agente_p,meta,tablero} = this.state
@@ -86,6 +94,7 @@ export default class Pantalla extends Component{
             //pintamos el camino recorrido
             this.pasos()
             this.explorarentorno()
+            this.paintAgente()
         }
         //meta abajo o a la izquierda
         while(ax > x || ay > y){
@@ -112,6 +121,7 @@ export default class Pantalla extends Component{
             //pintamos el camino recorrido
             this.pasos()
             this.explorarentorno()
+            this.paintAgente()
         }        
 
 
@@ -183,7 +193,7 @@ export default class Pantalla extends Component{
                     <>
                     <div 
                         style={{
-                            width:'80%',
+                            width:'1000px',
                             display:'grid',
                             gridTemplateColumns:'repeat(20, 1fr)',
                             gridAutoRows:'20',                            
@@ -191,7 +201,7 @@ export default class Pantalla extends Component{
                     >
                         <Casillas tablero={tablero}/>
                     </div>
-                        <Agente x={x} y={y}/>
+                        {/* <Agente x={x} y={y}/> */}
                         <Sensores 
                             s1={s1}
                             s2={s2} 
@@ -208,9 +218,11 @@ export default class Pantalla extends Component{
     }
 
 
-    llenartablero(){
-        const arr = crearentorno()
-        this.setState({tablero: arr});        
+    async llenartablero(){
+        const arr = await crearentorno()
+        this.setState({tablero: arr}); 
+        console.log('Antes de pintar agente');
+        this.paintAgente()       
     }        
 
     definirobs(){
