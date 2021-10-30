@@ -6,7 +6,6 @@
 
 .casilla:hover {
     transform: scale(0.8);
-    transition: visibility 0s 2s, opacity 2s linear;
     border-color: green;
-    border-width: 5px;
+    border-width: 2px;
 }

@@ -12,7 +12,7 @@ const Casillas =({tablero})=>{
                                         casilla.meta     === true ? 'seagreen' : 
                                         casilla.obs      === true ? 'red' : 
                                         casilla.visitado === true ? 'plum' : 'white' 
-                    }}> 
+                    }}> {casilla.id+' x:'+casilla.x+', y:'+casilla.y}
                 </button>
             </div>
             ))
