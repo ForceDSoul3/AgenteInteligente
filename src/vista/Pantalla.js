@@ -42,8 +42,7 @@ export default class Pantalla extends Component{
 
     }
 
-    async paintAgente(){
-        console.log('Pintando agente');
+    async paintAgente(){        
         const {agente_p,tablero} = this.state
         const ajuste = colorearagente({agente_p,tablero})
         this.setState({tablero: ajuste})
@@ -56,7 +55,7 @@ export default class Pantalla extends Component{
         const {agente_p,meta,tablero} = this.state
         
         const casilla = parseInt(meta)    
-        let x = null 
+        let x = null
         let y = null
         
         var ax = agente_p.x
@@ -72,10 +71,13 @@ export default class Pantalla extends Component{
         //console.log('Agente está en: '+ax+', '+ay)                
         //meta arriba o a la derecha
         while(ax < x || ay < y){
+            this.pasos()
+            
+            this.explorarentorno()            
+
             let difx = x-ax
             let dify = y-ay
-            console.log('Diferencia x: ',difx,'Diferencia y: ',dify)
-            await this.sleep(500)
+            console.log('Diferencia x: ',difx,'Diferencia y: ',dify)            
             console.log('Diferencias o distancia: '+difx,dify)
             //cuando la diferencia de x es mayor a la de y
             if(difx>dify){
@@ -92,17 +94,20 @@ export default class Pantalla extends Component{
             ax = agente_p.x
             ay = agente_p.y
             //pintamos el camino recorrido
-            this.pasos()
-            this.explorarentorno()
+            
             this.paintAgente()
+            //this.paintAgente()
+            await this.sleep(500)
+            this.pasos()
         }
         //meta abajo o a la izquierda
-        while(ax > x || ay > y){
+        while(ax > x || ay > y){            
+            this.explorarentorno()
+            this.paintAgente()
             let difx = ax-x
             let dify = ay-y
-            console.log('Diferencia x: ',difx,'Diferencia y: ',dify)
-            await this.sleep(500)
-            console.log('Diferencias o distancia: '+difx,dify)
+            //console.log('Diferencia x: ',difx,'Diferencia y: ',dify)            
+            //console.log('Diferencias o distancia: '+difx,dify)
             //cuando la diferencia de x es mayor a la de y
             if(difx>dify){
                 //mover en eje x                
@@ -119,9 +124,10 @@ export default class Pantalla extends Component{
             ax = agente_p.x
             ay = agente_p.y
             //pintamos el camino recorrido
+            
+            //this.paintAgente()                       
+            await this.sleep(500)
             this.pasos()
-            this.explorarentorno()
-            this.paintAgente()
         }        
 
 
@@ -271,9 +277,9 @@ export default class Pantalla extends Component{
         this.setState({agente_p: movimiento})
     }
 
-    pasos(){
+    async pasos(){
         const {agente_p,tablero} = this.state
-        const ajuste = colorearcamino({agente_p,tablero})       
+        const ajuste = await colorearcamino({agente_p,tablero})       
         this.setState({tablero: ajuste})
 
     }

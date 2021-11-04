@@ -7,7 +7,7 @@ export const colorearagente = ({agente_p,tablero}) =>{
     //creamos copia del tablero
     let ajuste = [...tablero]
     //actualizamos tablero con valor visitado true a la casilla donde se encontró el agente
-    ajuste[elementsCoord] = {...ajuste[elementsCoord], isAgente: true} 
+    ajuste[elementsCoord] = {...ajuste[elementsCoord], isAgente: true}
     return(ajuste)
 }
 
@@ -20,7 +20,7 @@ export const colorearcamino = ({agente_p,tablero}) =>{
     //creamos copia del tablero
     let ajuste = [...tablero]
     //actualizamos tablero con valor visitado true a la casilla donde se encontró el agente
-    ajuste[elementsCoord] = {...ajuste[elementsCoord], visitado: true, isAgente: false} 
+    ajuste[elementsCoord] = {...ajuste[elementsCoord], visitado: true}
     console.log(ajuste);
     return(ajuste)
 }
@@ -31,8 +31,8 @@ export const colorearmeta = ({tablero, meta}) =>{
     ajuste = tablero
     for(let i=0; i<=399; i++){
         if(ajuste[i].id===casilla){
-            ajuste[i].meta = true  
-            ajuste[i].obs = false              
+            ajuste[i].meta = true
+            ajuste[i].obs = false
         }
         else{
             ajuste[i].meta = false
