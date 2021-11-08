@@ -1,31 +1,42 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 // import Agente from './Agente'
 import Casillas from './Casillas'
 import Sensores from './Sensores'
-import { evaluarS1, evaluarS2, evaluarS3,evaluarS4,evaluarS5,evaluarS6,evaluarS7,evaluarS8} from '../logica/exploracion'
-import { colorearagente, colorearcamino, colorearmeta, colorearobstaculo, crearentorno, crearmuros } from '../logica/calculosentorno'
+import { evaluarS1, evaluarS2, evaluarS3, evaluarS4, evaluarS5, evaluarS6, evaluarS7, evaluarS8 } from '../logica/exploracion'
+import {
+    colorearagente,
+    //colorearagente, 
+    //colorearcamino, 
+    colorearmeta,
+    //colorearobstaculo, 
+    crearentorno,
+    //crearmuros 
+} from '../logica/calculosentorno'
 
 
-export default class Pantalla extends Component{
-    constructor(props){
+export default class Pantalla extends Component {
+    constructor(props) {
         super(props)
-        this.state={
+        this.state = {
             //sensores
-            s1: false, s2: false, s3: false, s4: false, s5: false, s6: false, s7: false, s8: false,
+            s1: '', s2: '', s3: '', s4: '', s5: '', s6: '', s7: '', s8: '',
 
             tablero: [],//configura el tablero o entorno
-            agente_p: {x:1, y:1},//posición de nuestro agente, por defecto en 1,1
+            agente_p: { x: 1, y: 1 },//posición de nuestro agente, por defecto en 1,1
             obstac: '',//dónde poner el obstáculo #de casilla 
-            meta: ''//dónde poner la meta #de casilla
+            meta: '',//dónde poner la meta #de casilla     
+            
+            stop:false
         }
+
         this.llenartablero = this.llenartablero.bind(this)
-        
-        this.definirobs = this.definirobs.bind(this)
+
+        //this.definirobs = this.definirobs.bind(this)
         this.definirmeta = this.definirmeta.bind(this)
-        
+        /*
         this.crearmuralla = this.crearmuralla.bind(this)
         
-        this.objetivocambio = this.objetivocambio.bind(this)
+        this.objetivocambio = this.objetivocambio.bind(this)*/
         this.metacambio = this.metacambio.bind(this)
 
         this.caminarnorte = this.caminarnorte.bind(this)
@@ -35,14 +46,14 @@ export default class Pantalla extends Component{
 
         this.irameta = this.irameta.bind(this)
         this.sleep = this.sleep.bind(this)
-        this.pasos = this.pasos.bind(this)
-        this.paintAgente = this.paintAgente.bind(this)
+        //this.pasos = this.pasos.bind(this)
+        //this.paintAgente = this.paintAgente.bind(this)
 
-        this.explorarentorno = this.explorarentorno.bind(this)
+        //this.explorarentorno = this.explorarentorno.bind(this)*/
 
     }
 
-    async paintAgente(){        
+    /*paintAgente(){        
         const {agente_p,tablero} = this.state
         const ajuste = colorearagente({agente_p,tablero})
         this.setState({tablero: ajuste})
@@ -51,119 +62,130 @@ export default class Pantalla extends Component{
         console.log('Agente pintado');
     }
     
-    async irameta(){
-        const {agente_p,meta,tablero} = this.state
-        
-        const casilla = parseInt(meta)    
-        let x = null
-        let y = null
-        
-        var ax = agente_p.x
-        var ay = agente_p.y
-        
-        //obtenemos las propiedades de la casilla meta (id,x,y,obs,meta,visitado)
-        const entablero = tablero.find(element => element.id === casilla)
-        //extraemos a x , y respectivamente
-        x = entablero.x
-        y = entablero.y
-        
-        //console.log('Meta está en: '+x+', '+y)        
-        //console.log('Agente está en: '+ax+', '+ay)                
-        //meta arriba o a la derecha
-        while(ax < x || ay < y){
-            this.pasos()
-            
-            this.explorarentorno()            
+    */
+    async irameta() {
+        const { tablero, stop } = this.state        
+        //CAMBIA LA POSICIÓN DEL AGENTE
 
-            let difx = x-ax
-            let dify = y-ay
-            console.log('Diferencia x: ',difx,'Diferencia y: ',dify)            
-            console.log('Diferencias o distancia: '+difx,dify)
-            //cuando la diferencia de x es mayor a la de y
-            if(difx>dify){
-                //mover en eje x                
-                this.caminareste()
-            }
-            //cuando la diferencia de y es mayor a la de x
-            else{
-                //mover en eje y                
-                this.caminarnorte()
-            }
+        //while (stop === false) {
+        this.explorarentorno()
 
-            //actualizamos valores, a dónde llegó el agente?
-            ax = agente_p.x
-            ay = agente_p.y
-            //pintamos el camino recorrido
-            
-            this.paintAgente()
-            //this.paintAgente()
-            await this.sleep(500)
-            this.pasos()
-        }
-        //meta abajo o a la izquierda
-        while(ax > x || ay > y){            
-            this.explorarentorno()
-            this.paintAgente()
-            let difx = ax-x
-            let dify = ay-y
-            //console.log('Diferencia x: ',difx,'Diferencia y: ',dify)            
-            //console.log('Diferencias o distancia: '+difx,dify)
-            //cuando la diferencia de x es mayor a la de y
-            if(difx>dify){
-                //mover en eje x                
-                this.caminaroeste()
+        if (stop === false) {
+            setTimeout(() => {
+                const { s1, s2, s3, s4, s5, s6, s7, s8, s9 } = this.state
+                /*if (s1 === 'meta' || s2 === 'meta' || s3 === 'meta' || s4 === 'meta' || s5 === 'meta' || s6 === 'meta' || s7 === 'meta' || s8 === 'meta') {
+                    if (s1 === 'meta' && s2 === 'vaci') {
+                        this.caminarnorte()                        
+                        return
+                    }
+                    if (s1 === 'meta' && s8 === 'vaci') {
+                        this.caminaroeste()
+                        return
+                    }
+                    if (s2 === 'meta') {
+                        this.caminarnorte()
+                        this.setState({stop:true})
+                        return
+                    }
+                }*/
+
+                if (s1 === 'obst' || s8 === 'obst') {
+                    console.log("hay un obstaculo al noroeste")
+                    if (s2 === 'vaci') {
+                        this.caminarnorte()
+                        return
+                    }
+                    if (s4 === 'vaci') {
+                        this.caminareste()
+                        return
+                    }
+                    if(s6 === 'vaci'){
+                        this.caminarsur()
+                        return
+                    }
+                }
+                if (s7 === 'obst' || s6 === 'obs') {
+                    console.log("hay un obstaculo al suroeste")
+                    if (s2 === 'vaci') {
+                        this.caminarnorte()
+                        return
+                    }
+                    if(s6 === 'vaci'){
+                        this.caminarsur()
+                        return
+                    }
+                    if(s6 === 'vaci'){
+
+                    }
+                }
+
+                if (s4 === 'obst' || s5 === 'obst'){
+                    if(s6 === 'vaci'){
+                        this.caminarsur()
+                        return
+                    }
+                    if(s8==='vaci'){
+                        this.caminaroeste()
+                        return
+                    }
+                    if(s2 === 'vaci'){
+                        this.caminarnorte()
+                        return
+                    }
+                }
+
                 
-            }
-            //cuando la diferencia de y es mayor a la de x
-            else{
-                //mover en eje y                
-                this.caminarsur()                 
-            }
+            }, 20)
 
-            //actualizamos valores, a dónde llegó el agente?
-            ax = agente_p.x
-            ay = agente_p.y
-            //pintamos el camino recorrido
+            setTimeout(() => {
+                //Actualizar vista
+                const { agente_p } = this.state
+                //RECALCULAR CASILLAS VISITADAS Y COLOREAR POS ACTUAL DEL AGENTE
+                const recalcular = colorearagente({ agente_p, tablero })
+                //ACTUALIZAR ENTORNO
+                this.setState({ tablero: recalcular })
+    
+            }, 50)//Delay necesario para esperar movimiento
             
-            //this.paintAgente()                       
-            await this.sleep(500)
-            this.pasos()
-        }        
+        }
+
+        
+
+
+        //}
 
 
     }
 
-    render(){
+    render() {
         const {
-            tablero, 
-            objetivo, 
-            meta, 
-            agente_p,
-            s1,s2,s3,s4,s5,s6,s7,s8
+            tablero,
+            //objetivo, 
+            meta,
+            //agente_p,
+            s1, s2, s3, s4, s5, s6, s7, s8
         } = this.state
-        const x = (agente_p.x)
-        const y = (agente_p.y)
-        return(
+
+        return (
             <>
-                <button 
+                <button
                     onClick={this.llenartablero}
-                    style={{position:'fixed',top:'10%',right:'2%'}}
-                >llenar tablero</button>                
-                <input type='number' style={{position:'fixed',top:'17%',right:'2%'}} value={objetivo} onChange={this.objetivocambio} placeholder='insertar obstáculo # de casilla'/>
+                    style={{ position: 'fixed', top: '10%', right: '2%' }}
+                >llenar tablero</button>
+                {/*<input type='number' style={{position:'fixed',top:'17%',right:'2%'}} value={objetivo} onChange={this.objetivocambio} placeholder='insertar obstáculo # de casilla'/>
                 <button 
                     onClick={this.definirobs}
                     style={{position:'fixed',top:'21%',right:'2%'}}
-                >colocar obs</button>                
-                <input type='number' style={{position:'fixed',top:'27%',right:'2%'}} value={meta} onChange={this.metacambio} placeholder='definir meta # casilla'/>
-                <button 
+                >colocar obs</button>*/}
+                <input type='number' style={{ position: 'fixed', top: '27%', right: '2%' }} value={meta} onChange={this.metacambio} placeholder='definir meta # casilla' />
+                <button
                     onClick={this.definirmeta}
-                    style={{position:'fixed',top:'31%',right:'2%'}}
-                >colocar meta</button>                
-                <button 
+                    style={{ position: 'fixed', top: '31%', right: '2%' }}
+                >colocar meta</button>
+                {/*<button 
                     onClick={this.crearmuralla}
                     style={{position:'fixed',top:'41%',right:'2%'}}
                 >crear muralla</button>
-
 
                 <button 
                     onClick={this.caminarnorte}
@@ -180,58 +202,61 @@ export default class Pantalla extends Component{
                 <button 
                     onClick={this.caminaroeste}
                     style={{position:'fixed',top:'54%',right:'10%'}}
-                >ir oeste</button>           
+                >ir oeste</button>     */}
 
-                <button 
+                <button
                     onClick={this.irameta}
-                    style={{position:'fixed',top:'70%',right:'2%'}}
+                    style={{ position: 'fixed', top: '70%', right: '2%' }}
                 >ir a meta</button>
 
-
+                {/* 
                 <button 
                     onClick={this.explorarentorno}
                     style={{position:'fixed',top:'75%',right:'2%'}}
                 >explorar entorno</button>
-                
-                
+                */}
+
+
+
                 {
-                    tablero.length>0 && 
+                    tablero.length > 0 &&
                     <>
-                    <div 
-                        style={{
-                            width:'1000px',
-                            display:'grid',
-                            gridTemplateColumns:'repeat(20, 1fr)',
-                            gridAutoRows:'20',                            
-                        }}
-                    >
-                        <Casillas tablero={tablero}/>
-                    </div>
-                        {/* <Agente x={x} y={y}/> */}
-                        <Sensores 
+                        <div
+                            style={{
+                                width: '1000px',
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(20, 1fr)',
+                                gridAutoRows: '20',
+                            }}
+                        >
+                            <Casillas tablero={tablero} />
+                        </div>
+                        <Sensores
                             s1={s1}
-                            s2={s2} 
-                            s3={s3} 
-                            s4={s4} 
+                            s2={s2}
+                            s3={s3}
+                            s4={s4}
                             s5={s5}
                             s6={s6}
                             s7={s7}
                             s8={s8}
                         />
-                    </>}                
+                    </>}
+
             </>
         )
     }
 
 
-    async llenartablero(){
-        const arr = await crearentorno()
-        this.setState({tablero: arr}); 
-        console.log('Antes de pintar agente');
-        this.paintAgente()       
-    }        
+    llenartablero() {
+        const { agente_p } = this.state
+        const arr = crearentorno({ agente_p })
+        this.setState({ tablero: arr, stop:false });
+        //console.log('Antes de pintar agente');
+        //this.paintAgente(agente_p,arr)
+    }
 
-    definirobs(){
+    /*definirobs(){
         const {tablero, obstac} = this.state        
         const ajuste = colorearobstaculo({tablero, obstac})
         this.setState({tablero: ajuste})        
@@ -241,62 +266,56 @@ export default class Pantalla extends Component{
         const {tablero} = this.state
         const muralla = crearmuros({tablero})
         this.setState({tablero: muralla})
+    }*/
+
+    definirmeta() {
+        const { tablero, meta } = this.state
+        const ajuste = colorearmeta({ tablero, meta })
+        this.setState({ tablero: ajuste })
     }
 
-    definirmeta(){        
-        const {tablero, meta} = this.state
-        const ajuste = colorearmeta({tablero, meta})
-        this.setState({tablero: ajuste})        
-    }
-
-    caminarnorte(){
-        const {agente_p} = this.state
+    caminarnorte() {
+        const { agente_p } = this.state
         let movimiento = agente_p
-        movimiento.y++        
-        this.setState({agente_p: movimiento})
+        movimiento.y++
+        this.setState({ agente_p: movimiento })
     }
 
-    caminarsur(){
-        const {agente_p} = this.state
+    caminarsur() {
+        const { agente_p } = this.state
         let movimiento = agente_p
-        movimiento.y--        
-        this.setState({agente_p: movimiento})
+        movimiento.y--
+        this.setState({ agente_p: movimiento })
     }
 
-    caminareste(){
-        const {agente_p} = this.state
+    caminareste() {
+        const { agente_p } = this.state
         let movimiento = agente_p
-        movimiento.x++        
-        this.setState({agente_p: movimiento})
+        movimiento.x++
+        this.setState({ agente_p: movimiento })
     }
 
-    caminaroeste(){
-        const {agente_p} = this.state
+    caminaroeste() {
+        const { agente_p } = this.state
         let movimiento = agente_p
-        movimiento.x--        
-        this.setState({agente_p: movimiento})
+        movimiento.x--
+        this.setState({ agente_p: movimiento })
     }
 
-    async pasos(){
-        const {agente_p,tablero} = this.state
-        const ajuste = await colorearcamino({agente_p,tablero})       
-        this.setState({tablero: ajuste})
 
-    }
-
-    async explorarentorno(){
-        const{agente_p, tablero} = this.state
+    async explorarentorno() {
+        const { agente_p, tablero } = this.state
 
         //Evaluar todas las casillas, para saber si hay obstáculo
-        const estadoS1 = await evaluarS1({agente_p, tablero})
-        const estadoS2 = await evaluarS2({agente_p, tablero})
-        const estadoS3 = await evaluarS3({agente_p, tablero})
-        const estadoS4 = await evaluarS4({agente_p, tablero})
-        const estadoS5 = await evaluarS5({agente_p, tablero})
-        const estadoS6 = await evaluarS6({agente_p, tablero})
-        const estadoS7 = await evaluarS7({agente_p, tablero})
-        const estadoS8 = await evaluarS8({agente_p, tablero})
-                
+        const estadoS1 = evaluarS1({ agente_p, tablero })
+        const estadoS2 = evaluarS2({ agente_p, tablero })
+        const estadoS3 = evaluarS3({ agente_p, tablero })
+        const estadoS4 = evaluarS4({ agente_p, tablero })
+        const estadoS5 = evaluarS5({ agente_p, tablero })
+        const estadoS6 = evaluarS6({ agente_p, tablero })
+        const estadoS7 = evaluarS7({ agente_p, tablero })
+        const estadoS8 = evaluarS8({ agente_p, tablero })
+
         this.setState({
             s1: estadoS1,
             s2: estadoS2,
@@ -305,20 +324,23 @@ export default class Pantalla extends Component{
             s5: estadoS5,
             s6: estadoS6,
             s7: estadoS7,
-            s8: estadoS8})
+            s8: estadoS8
+        })
+        //const entorno = {s1:estadoS1, s2:estadoS2, s3:estadoS3, s4:estadoS4, s5:estadoS5, s6:estadoS6, s7:estadoS7, s8:estadoS8}
+        //return entorno
     }
 
-    objetivocambio(e){
-        const{value} = e.target
-        this.setState({obstac: value})
+    objetivocambio(e) {
+        const { value } = e.target
+        this.setState({ obstac: value })
     }
 
-    metacambio(e){
-        const{value} = e.target
-        this.setState({meta: value})
+    metacambio(e) {
+        const { value } = e.target
+        this.setState({ meta: value })
     }
 
-    sleep(milliseconds){
+    sleep(milliseconds) {
         return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
 
