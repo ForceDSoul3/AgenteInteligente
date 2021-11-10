@@ -4,13 +4,10 @@ import Casillas from './Casillas'
 import Sensores from './Sensores'
 import { evaluarS1, evaluarS2, evaluarS3, evaluarS4, evaluarS5, evaluarS6, evaluarS7, evaluarS8 } from '../logica/exploracion'
 import {
-    colorearagente,
-    //colorearagente, 
-    //colorearcamino, 
+    colorearagente,    
     colorearmeta,
-    //colorearobstaculo, 
+    colorearobstaculo, 
     crearentorno,
-    //crearmuros 
 } from '../logica/calculosentorno'
 
 
@@ -31,12 +28,11 @@ export default class Pantalla extends Component {
 
         this.llenartablero = this.llenartablero.bind(this)
 
-        //this.definirobs = this.definirobs.bind(this)
+        this.definirobs = this.definirobs.bind(this)
         this.definirmeta = this.definirmeta.bind(this)
-        /*
-        this.crearmuralla = this.crearmuralla.bind(this)
+                
         
-        this.objetivocambio = this.objetivocambio.bind(this)*/
+        this.objetivocambio = this.objetivocambio.bind(this)
         this.metacambio = this.metacambio.bind(this)
 
         this.caminarnorte = this.caminarnorte.bind(this)
@@ -45,11 +41,7 @@ export default class Pantalla extends Component {
         this.caminaroeste = this.caminaroeste.bind(this)
 
         this.irameta = this.irameta.bind(this)
-        this.sleep = this.sleep.bind(this)
-        //this.pasos = this.pasos.bind(this)
-        //this.paintAgente = this.paintAgente.bind(this)
-
-        //this.explorarentorno = this.explorarentorno.bind(this)*/
+        this.sleep = this.sleep.bind(this)        
 
     }
 
@@ -89,8 +81,11 @@ export default class Pantalla extends Component {
                     }
                 }*/
 
-                if (s1 === 'obst' || s8 === 'obst') {
-                    console.log("hay un obstaculo al noroeste")
+                if (s1 === 'obst' || s8 === 'obst' || s1==='visi' || s8 === 'visi') {
+                    if(s8 === 'vaci'){
+                        this.caminaroeste()
+                        return
+                    }
                     if (s2 === 'vaci') {
                         this.caminarnorte()
                         return
@@ -104,8 +99,16 @@ export default class Pantalla extends Component {
                         return
                     }
                 }
-                if (s7 === 'obst' || s6 === 'obs') {
+                if (s7 === 'obst' || s6 === 'obs' || s7 === 'visi' || s6 === 'visi') {
                     console.log("hay un obstaculo al suroeste")
+                    if(s6 === 'vaci'){
+                        this.caminarsur()
+                        return
+                    }
+                    if(s8==='vaci'){
+                        this.caminaroeste()
+                        return
+                    }
                     if (s2 === 'vaci') {
                         this.caminarnorte()
                         return
@@ -114,12 +117,17 @@ export default class Pantalla extends Component {
                         this.caminarsur()
                         return
                     }
-                    if(s6 === 'vaci'){
-
+                    if(s4 === 'vaci'){
+                        this.caminareste()
+                        return
                     }
                 }
 
-                if (s4 === 'obst' || s5 === 'obst'){
+                if (s4 === 'obst' || s5 === 'obst' || s4 === 'visi' || s5 === 'visi'){
+                    if(s4 === 'vaci'){
+                        this.caminareste()
+                        return
+                    }
                     if(s6 === 'vaci'){
                         this.caminarsur()
                         return
@@ -147,20 +155,15 @@ export default class Pantalla extends Component {
     
             }, 50)//Delay necesario para esperar movimiento
             
-        }
-
-        
-
+        }    
 
         //}
-
-
     }
 
     render() {
         const {
             tablero,
-            //objetivo, 
+            objetivo, 
             meta,
             //agente_p,
             s1, s2, s3, s4, s5, s6, s7, s8
@@ -172,11 +175,11 @@ export default class Pantalla extends Component {
                     onClick={this.llenartablero}
                     style={{ position: 'fixed', top: '10%', right: '2%' }}
                 >llenar tablero</button>
-                {/*<input type='number' style={{position:'fixed',top:'17%',right:'2%'}} value={objetivo} onChange={this.objetivocambio} placeholder='insertar obstáculo # de casilla'/>
+                <input type='number' style={{position:'fixed',top:'17%',right:'2%'}} value={objetivo} onChange={this.objetivocambio} placeholder='insertar obstáculo # de casilla'/>
                 <button 
                     onClick={this.definirobs}
                     style={{position:'fixed',top:'21%',right:'2%'}}
-                >colocar obs</button>*/}
+                >colocar obs</button>
                 <input type='number' style={{ position: 'fixed', top: '27%', right: '2%' }} value={meta} onChange={this.metacambio} placeholder='definir meta # casilla' />
                 <button
                     onClick={this.definirmeta}
@@ -208,14 +211,6 @@ export default class Pantalla extends Component {
                     onClick={this.irameta}
                     style={{ position: 'fixed', top: '70%', right: '2%' }}
                 >ir a meta</button>
-
-                {/* 
-                <button 
-                    onClick={this.explorarentorno}
-                    style={{position:'fixed',top:'75%',right:'2%'}}
-                >explorar entorno</button>
-                */}
-
 
 
                 {
@@ -251,22 +246,16 @@ export default class Pantalla extends Component {
     llenartablero() {
         const { agente_p } = this.state
         const arr = crearentorno({ agente_p })
-        this.setState({ tablero: arr, stop:false });
+        this.setState({ tablero: arr, stop:false ,agente_p:{x:1,y:1}});
         //console.log('Antes de pintar agente');
         //this.paintAgente(agente_p,arr)
     }
 
-    /*definirobs(){
+    definirobs(){
         const {tablero, obstac} = this.state        
         const ajuste = colorearobstaculo({tablero, obstac})
         this.setState({tablero: ajuste})        
-    }
-
-    crearmuralla(){        
-        const {tablero} = this.state
-        const muralla = crearmuros({tablero})
-        this.setState({tablero: muralla})
-    }*/
+    }    
 
     definirmeta() {
         const { tablero, meta } = this.state
