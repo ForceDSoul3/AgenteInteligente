@@ -1,3 +1,5 @@
+
+//FILL ARRAY THAT REPRESENTS TH ENVIROMENT INCLUDES THE DEFAULT OBSTACLES ON 0X 0Y AND MAX X Y
 export const crearentorno = () => {
     const x = 1
     const y = 1
@@ -26,6 +28,7 @@ export const crearentorno = () => {
 
 
 
+//TAKES THE POSITION OF THE AGENT AND PRINTS IT INSIDE THE ENVIROMENT ARRAY
 export const colorearagente = ({agente_p,tablero}) => {
     let ax = agente_p.x
     let ay = agente_p.y
@@ -45,6 +48,7 @@ export const colorearagente = ({agente_p,tablero}) => {
     return(updatedTable)
 }
 
+//USED TO SET THE PLACE WHERE THE GOAL IS
 export const colorearmeta = ({tablero, meta}) =>{
     const casilla = parseInt(meta)
     let ajuste = []
@@ -63,7 +67,7 @@ export const colorearmeta = ({tablero, meta}) =>{
 
 
 
-
+//INSERTS AND OBSTACLE
 export const colorearobstaculo = ({tablero, obstac}) =>{
     const casilla = parseInt(obstac)
     

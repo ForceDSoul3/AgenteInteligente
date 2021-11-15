@@ -4,9 +4,9 @@ import Casillas from './Casillas'
 import Sensores from './Sensores'
 import { evaluarS1, evaluarS2, evaluarS3, evaluarS4, evaluarS5, evaluarS6, evaluarS7, evaluarS8 } from '../logica/exploracion'
 import {
-    colorearagente,    
+    colorearagente,
     colorearmeta,
-    colorearobstaculo, 
+    colorearobstaculo,
     crearentorno,
 } from '../logica/calculosentorno'
 
@@ -22,16 +22,19 @@ export default class Pantalla extends Component {
             agente_p: { x: 1, y: 1 },//posición de nuestro agente, por defecto en 1,1
             obstac: '',//dónde poner el obstáculo #de casilla 
             meta: '',//dónde poner la meta #de casilla     
-            
-            stop:false
+
+            pathlist: [],
+            stop: false,
+            index: -2
         }
+        this.sleep = this.sleep.bind(this)
 
         this.llenartablero = this.llenartablero.bind(this)
 
         this.definirobs = this.definirobs.bind(this)
         this.definirmeta = this.definirmeta.bind(this)
-                
-        
+
+
         this.objetivocambio = this.objetivocambio.bind(this)
         this.metacambio = this.metacambio.bind(this)
 
@@ -40,122 +43,34 @@ export default class Pantalla extends Component {
         this.caminareste = this.caminareste.bind(this)
         this.caminaroeste = this.caminaroeste.bind(this)
 
-        this.irameta = this.irameta.bind(this)
-        this.sleep = this.sleep.bind(this)        
+        this.rules = this.rules.bind(this)
+        this.viewupdate = this.viewupdate.bind(this)
+
+        this.start = this.start.bind(this)
 
     }
 
-    /*paintAgente(){        
-        const {agente_p,tablero} = this.state
-        const ajuste = colorearagente({agente_p,tablero})
-        this.setState({tablero: ajuste})
-        console.log(ajuste);
-        console.log(this.state.tablero);
-        console.log('Agente pintado');
-    }
-    
-    */
-    async irameta() {
-        const { tablero, stop } = this.state        
-        //CAMBIA LA POSICIÓN DEL AGENTE
+    async start() {
+        const { stop } = this.state
+        let loopstop = stop        //INITIAL STATE
 
-        //while (stop === false) {
-        this.explorarentorno()
+        while (loopstop === false) {
+            //CAMBIA LA POSICIÓN DEL AGENTE
 
-        if (stop === false) {
-            setTimeout(() => {
-                const { s1, s2, s3, s4, s5, s6, s7, s8, s9 } = this.state
-                /*if (s1 === 'meta' || s2 === 'meta' || s3 === 'meta' || s4 === 'meta' || s5 === 'meta' || s6 === 'meta' || s7 === 'meta' || s8 === 'meta') {
-                    if (s1 === 'meta' && s2 === 'vaci') {
-                        this.caminarnorte()                        
-                        return
-                    }
-                    if (s1 === 'meta' && s8 === 'vaci') {
-                        this.caminaroeste()
-                        return
-                    }
-                    if (s2 === 'meta') {
-                        this.caminarnorte()
-                        this.setState({stop:true})
-                        return
-                    }
-                }*/
+            this.explorarentorno()
 
-                if (s1 === 'obst' || s8 === 'obst' || s1==='visi' || s8 === 'visi') {
-                    if(s8 === 'vaci'){
-                        this.caminaroeste()
-                        return
-                    }
-                    if (s2 === 'vaci') {
-                        this.caminarnorte()
-                        return
-                    }
-                    if (s4 === 'vaci') {
-                        this.caminareste()
-                        return
-                    }
-                    if(s6 === 'vaci'){
-                        this.caminarsur()
-                        return
-                    }
-                }
-                if (s7 === 'obst' || s6 === 'obs' || s7 === 'visi' || s6 === 'visi') {
-                    console.log("hay un obstaculo al suroeste")
-                    if(s6 === 'vaci'){
-                        this.caminarsur()
-                        return
-                    }
-                    if(s8==='vaci'){
-                        this.caminaroeste()
-                        return
-                    }
-                    if (s2 === 'vaci') {
-                        this.caminarnorte()
-                        return
-                    }
-                    if(s6 === 'vaci'){
-                        this.caminarsur()
-                        return
-                    }
-                    if(s4 === 'vaci'){
-                        this.caminareste()
-                        return
-                    }
-                }
+            await this.sleep(100)
+            this.rules()
 
-                if (s4 === 'obst' || s5 === 'obst' || s4 === 'visi' || s5 === 'visi'){
-                    if(s4 === 'vaci'){
-                        this.caminareste()
-                        return
-                    }
-                    if(s6 === 'vaci'){
-                        this.caminarsur()
-                        return
-                    }
-                    if(s8==='vaci'){
-                        this.caminaroeste()
-                        return
-                    }
-                    if(s2 === 'vaci'){
-                        this.caminarnorte()
-                        return
-                    }
-                }
+            ////////////////////////////////////////////////////////////////////////
+            //UPDATES THE VIEW, VISUAL STUFF
 
-                
-            }, 20)
+            await this.sleep(110)
+            this.viewupdate()
 
-            setTimeout(() => {
-                //Actualizar vista
-                const { agente_p } = this.state
-                //RECALCULAR CASILLAS VISITADAS Y COLOREAR POS ACTUAL DEL AGENTE
-                const recalcular = colorearagente({ agente_p, tablero })
-                //ACTUALIZAR ENTORNO
-                this.setState({ tablero: recalcular })
-    
-            }, 50)//Delay necesario para esperar movimiento
-            
-        }    
+            const { stop } = this.state
+            loopstop = stop //UPDATES THE STOP STATE
+        }
 
         //}
     }
@@ -163,11 +78,13 @@ export default class Pantalla extends Component {
     render() {
         const {
             tablero,
-            objetivo, 
+            objetivo,
             meta,
-            //agente_p,
             s1, s2, s3, s4, s5, s6, s7, s8
         } = this.state
+
+
+
 
         return (
             <>
@@ -175,10 +92,10 @@ export default class Pantalla extends Component {
                     onClick={this.llenartablero}
                     style={{ position: 'fixed', top: '10%', right: '2%' }}
                 >llenar tablero</button>
-                <input type='number' style={{position:'fixed',top:'17%',right:'2%'}} value={objetivo} onChange={this.objetivocambio} placeholder='insertar obstáculo # de casilla'/>
-                <button 
+                <input type='number' style={{ position: 'fixed', top: '17%', right: '2%' }} value={objetivo} onChange={this.objetivocambio} placeholder='insertar obstáculo # de casilla' />
+                <button
                     onClick={this.definirobs}
-                    style={{position:'fixed',top:'21%',right:'2%'}}
+                    style={{ position: 'fixed', top: '21%', right: '2%' }}
                 >colocar obs</button>
                 <input type='number' style={{ position: 'fixed', top: '27%', right: '2%' }} value={meta} onChange={this.metacambio} placeholder='definir meta # casilla' />
                 <button
@@ -208,7 +125,7 @@ export default class Pantalla extends Component {
                 >ir oeste</button>     */}
 
                 <button
-                    onClick={this.irameta}
+                    onClick={this.start}
                     style={{ position: 'fixed', top: '70%', right: '2%' }}
                 >ir a meta</button>
 
@@ -246,49 +163,21 @@ export default class Pantalla extends Component {
     llenartablero() {
         const { agente_p } = this.state
         const arr = crearentorno({ agente_p })
-        this.setState({ tablero: arr, stop:false ,agente_p:{x:1,y:1}});
+        this.setState({ tablero: arr, stop: false, agente_p: { x: 1, y: 1 }, index: -2 });
         //console.log('Antes de pintar agente');
         //this.paintAgente(agente_p,arr)
     }
 
-    definirobs(){
-        const {tablero, obstac} = this.state        
-        const ajuste = colorearobstaculo({tablero, obstac})
-        this.setState({tablero: ajuste})        
-    }    
+    definirobs() {
+        const { tablero, obstac } = this.state
+        const ajuste = colorearobstaculo({ tablero, obstac })
+        this.setState({ tablero: ajuste })
+    }
 
     definirmeta() {
         const { tablero, meta } = this.state
         const ajuste = colorearmeta({ tablero, meta })
         this.setState({ tablero: ajuste })
-    }
-
-    caminarnorte() {
-        const { agente_p } = this.state
-        let movimiento = agente_p
-        movimiento.y++
-        this.setState({ agente_p: movimiento })
-    }
-
-    caminarsur() {
-        const { agente_p } = this.state
-        let movimiento = agente_p
-        movimiento.y--
-        this.setState({ agente_p: movimiento })
-    }
-
-    caminareste() {
-        const { agente_p } = this.state
-        let movimiento = agente_p
-        movimiento.x++
-        this.setState({ agente_p: movimiento })
-    }
-
-    caminaroeste() {
-        const { agente_p } = this.state
-        let movimiento = agente_p
-        movimiento.x--
-        this.setState({ agente_p: movimiento })
     }
 
 
@@ -326,11 +215,228 @@ export default class Pantalla extends Component {
 
     metacambio(e) {
         const { value } = e.target
-        this.setState({ meta: value })
+        this.setState({ meta: value, stop: false })
     }
+
+    caminarnorte() {
+        const { agente_p, pathlist } = this.state
+        let updatepath = pathlist
+        let movimiento = agente_p
+        movimiento.y++
+        updatepath.push({ x: movimiento.x, y: movimiento.y })
+
+        this.setState({ agente_p: movimiento, pathlist: updatepath, index: -2 })
+        console.log(pathlist)
+    }
+
+    caminarsur() {
+        const { agente_p, pathlist } = this.state
+        let updatepath = pathlist
+        let movimiento = agente_p
+        movimiento.y--
+        updatepath.push({ x: movimiento.x, y: movimiento.y })
+        this.setState({ agente_p: movimiento, pathlist: updatepath, index: -2 })
+        console.log(pathlist)
+    }
+
+    caminareste() {
+        const { agente_p, pathlist } = this.state
+        let updatepath = pathlist
+        let movimiento = agente_p
+        movimiento.x++
+        updatepath.push({ x: movimiento.x, y: movimiento.y })
+        this.setState({ agente_p: movimiento, pathlist: updatepath, index: -2 })
+        console.log(pathlist)
+    }
+
+    caminaroeste() {
+        const { agente_p, pathlist } = this.state
+        let updatepath = pathlist
+        let movimiento = agente_p
+        movimiento.x--
+        updatepath.push({ x: movimiento.x, y: movimiento.y })
+        this.setState({ agente_p: movimiento, pathlist: updatepath, index: -2 })
+        console.log(pathlist)
+    }
+
 
     sleep(milliseconds) {
         return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
+
+
+
+    rules() {
+        const { s1, s2, s3, s4, s5, s6, s7, s8 } = this.state
+
+        let backmove = []
+        let backlist = []
+        let movimiento = []
+        if ((s1 === 'visi' || s1 === 'obst') && (s2 === 'visi' || s2 === 'obst') && (s3 === 'visi' || s3 === 'obst') && (s4 === 'visi' || s4 === 'obst') && (s5 === 'visi' || s5 === 'obst') && (s6 === 'visi' || s6 === 'obst') && (s7 === 'visi' || s7 === 'obst') && (s8 === 'visi' || s8 === 'obst')) {
+            const { agente_p, pathlist, index } = this.state
+            let minus = index
+            movimiento = agente_p //COPY OF THE AGENT POSITION {x:n, y:n}
+            //console.log('Movimiento ',movimiento)
+            backlist = pathlist //LISTA ENTERA DE PASOS ANTERIORES
+            backmove = pathlist.at(minus)  //X ITEM DE LA LISTA, anteriormente visitado
+            //console.log('Backmove ',backmove) 
+            //cosole.log(pathlist)
+            movimiento.x = backmove.x
+            movimiento.y = backmove.y
+            backlist.push(agente_p)
+            //console.log(pathlist)
+            minus = minus - 2
+            //console.log('minus -2 =',minus)
+            //console.log(minus)
+            this.setState({ agente_p: movimiento, index: minus, pathlist: backlist })
+        }
+
+
+        //IF "META" IS NEARBY, MOVES TO THE PLACE IT IS///////////////////////////////////////////////////
+        //IF IT IS AT NORTH
+        if (s2 === 'meta') {
+            this.caminarnorte()
+            this.setState({ stop: true })
+            return
+        }
+        //IF IT IS AT EAST
+        if (s4 === 'meta') {
+            this.caminareste()
+            this.setState({ stop: true })
+            return
+        }
+        //IF IT IS AT SOUTH
+        if (s6 === 'meta') {
+            this.caminarsur()
+            this.setState({ stop: true })
+            return
+        }
+        //IF IT IS AT WEST
+        if (s8 === 'meta') {
+            this.caminaroeste()
+            this.setState({ stop: true })
+            return
+        }
+
+
+        //META NEARBY, AT CORNERS
+        //IF NW AND N IS CLEAR
+        if (s1 === 'meta' && s2 === 'vaci') {
+            this.caminarnorte()
+            return
+        }
+        //IF NW AND W IS CLEAR (AND N WASN'T)
+        if (s1 === 'meta' && s8 === 'vaci') {
+            this.caminaroeste()
+            return
+        }
+        //IF NE AND N IS CLEAR
+        if (s3 === 'meta' && s2 === 'vaci') {
+            this.caminarnorte()
+            return
+        }
+        //IF NE AND E IS CLEAR (AND N WASN'T)
+        if (s3 === 'meta' && s4 === 'vaci') {
+            this.caminareste()
+            return
+        }
+        //IF SE AND E IS CLEAR
+        if (s5 === 'meta' && s4 === 'vaci') {
+            this.caminareste()
+            return
+        }
+        //IF SE AND S IS CLEAR (AND E WASN'T)
+        if (s5 === 'meta' && s6 === 'vaci') {
+            this.caminarsur()
+            return
+        }
+        //IF SW AND W IS CLEAR
+        if (s7 === 'meta' && s8 === 'vaci') {
+            this.caminaroeste()
+            return
+        }
+        //IF SW AND S IS CLEAR (AND W WASN'T)
+        if (s7 === 'meta' && s6 === 'vaci') {
+            this.caminaroeste()
+            return
+        }
+
+
+        if (s2 === 'vaci') {
+            this.caminarnorte()
+            return
+        }
+        if (s6 === 'vaci') {
+            this.caminarsur()
+            return
+        }
+        if (s8 === 'vaci') {
+            this.caminaroeste()
+            return
+        }
+        if (s4 === 'vaci') {
+            this.caminareste()
+            return
+        }
+
+
+
+        ////////////////////////////////////////////PATHS AT THE CORNERS///////////////////////////////////////////////
+        //WHEN S1 IS CLEAR TO WALK/////////////////////////
+        if (s1 === 'vaci' && s2 !== 'obst') {
+            this.caminarnorte()
+            return
+        }
+        //ONLY IF N WASN'T CLEAR
+        if (s1 === 'vaci' && s8 !== 'obst') {
+            this.caminaroeste()
+            return
+        }
+
+        //WHEN S3 IS CLEAR TO WALK/////////////////////////
+        if (s3 === 'vaci' && s2 !== 'obst') {
+            this.caminarnorte()
+            return
+        }
+        //ONLY IF N WASN'T CLEAR
+        if (s3 === 'vaci' && s4 !== 'obst') {
+            this.caminareste()
+            return
+        }
+
+        //WHEN S5 IS CLEAR TO WALK/////////////////////////
+        if (s5 === 'vaci' && s4 !== 'obst') {
+            this.caminareste()
+            return
+        }
+        //ONLY IF N WASN'T CLEAR
+        if (s5 === 'vaci' && s6 !== 'obst') {
+            this.caminarsur()
+            return
+        }
+
+        //WHEN S7 IS CLEAR TO WALK/////////////////////////
+        if (s7 === 'vaci' && s8 !== 'obst') {
+            this.caminaroeste()
+            return
+        }
+        //ONLY IF N WASN'T CLEAR
+        if (s7 === 'vaci' && s6 !== 'obst') {
+            this.caminarsur()
+            return
+        }
+
+    }
+
+    viewupdate() {
+        const { agente_p, tablero } = this.state//collects position of the agent            
+        //RECALCULAR CASILLAS VISITADAS Y COLOREAR POS ACTUAL DEL AGENTE
+        const recalcular = colorearagente({ agente_p, tablero }) //Updates the enviroment string
+        //ACTUALIZAR ENTORNO
+        this.setState({ tablero: recalcular }) //Sets the enviroment string into the new state
+
+
+        //console.log(pathlist)//PRINTS LAST VISITED                        
     }
 
 }
