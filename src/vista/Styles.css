@@ -1,0 +1,11 @@
+.casilla{
+    border: 1px solid whitesmoke;
+    transition-duration: 0.2s;
+    background-color: white;
+}
+
+.casilla:hover {
+    transform: scale(0.8);
+    border-color: green;
+    border-width: 2px;
+}

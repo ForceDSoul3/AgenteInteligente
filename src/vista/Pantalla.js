@@ -1,15 +1,10 @@
 import React, { Component } from 'react'
-// import Agente from './Agente'
 import Casillas from './Casillas'
 import Sensores from './Sensores'
-import { evaluarS1, evaluarS2, evaluarS3, evaluarS4, evaluarS5, evaluarS6, evaluarS7, evaluarS8 } from '../logica/exploracion'
-import {
-    colorearagente,
-    colorearmeta,
-    colorearobstaculo,
-    crearentorno,
-} from '../logica/calculosentorno'
 
+import './Styles.css'
+import { evaluarS1, evaluarS2, evaluarS3,evaluarS4,evaluarS5,evaluarS6,evaluarS7,evaluarS8} from '../logica/exploracion'
+import { colorearagente, colorearcamino, colorearmeta, colorearobstaculo, crearentorno, crearmuros } from '../logica/calculosentorno'
 
 export default class Pantalla extends Component {
     constructor(props) {
@@ -49,6 +44,7 @@ export default class Pantalla extends Component {
         this.start = this.start.bind(this)
 
     }
+
 
     async start() {
         const { stop } = this.state
