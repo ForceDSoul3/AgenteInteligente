@@ -9,7 +9,7 @@ const Casillas =({tablero})=>{
                         height:'50px',
                         position: 'relative',
                         backgroundColor:  casilla.isAgente === true ? 'green' : 
-                                        casilla.meta     === true ? 'seagreen' : 
+                                        casilla.meta     === true ? 'midnightblue' : 
                                         casilla.obs      === true ? 'red' : 
                                         casilla.visitado === true ? 'plum' : 'white' 
                     }}> {casilla.id+' x:'+casilla.x+', y:'+casilla.y}
